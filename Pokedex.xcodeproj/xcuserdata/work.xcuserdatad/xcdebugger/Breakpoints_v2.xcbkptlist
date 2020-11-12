@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   uuid = "B1671ECE-ACB0-4601-B712-57FEF9162A01"
+   type = "1"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "02110B9E-E60B-495E-A3FF-ED9E0CDCAE33"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "Pokedex/PokemonListViewController.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "48"
+            endingLineNumber = "48"
+            landmarkName = "viewDidLoad()"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "02110B9E-E60B-495E-A3FF-ED9E0CDCAE33 - 525b50cc0656d21b"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (PokedexAPI.ServiceResult&lt;PokedexAPI.Pokemon&gt;) -&gt; () in closure #1 (PokedexAPI.Result) -&gt; () in closure #1 (PokedexAPI.ServiceResult&lt;PokedexAPI.PokemonList&gt;) -&gt; () in Pokedex.PokemonListViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "Pokedex"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/work/Downloads/Pokedex/Pokedex/PokemonListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48"
+                  offsetFromSymbolStart = "358">
+               </Location>
+               <Location
+                  uuid = "02110B9E-E60B-495E-A3FF-ED9E0CDCAE33 - d894922e401650fd"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "closure #1 (PokedexAPI.TypeElement) -&gt; Swift.Optional&lt;Swift.String&gt; in closure #1 (PokedexAPI.ServiceResult&lt;PokedexAPI.Pokemon&gt;) -&gt; () in closure #1 (PokedexAPI.Result) -&gt; () in closure #1 (PokedexAPI.ServiceResult&lt;PokedexAPI.PokemonList&gt;) -&gt; () in Pokedex.PokemonListViewController.viewDidLoad() -&gt; ()"
+                  moduleName = "Pokedex"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/work/Downloads/Pokedex/Pokedex/PokemonListViewController.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "48"
+                  endingLineNumber = "48"
+                  offsetFromSymbolStart = "20">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "E4C3D9D2-6657-488E-9363-87749ADC7CCF"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "PokedexStyle/Common/Font.swift"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "34"
+            endingLineNumber = "34"
+            landmarkName = "loadFontIfNeeded(font:)"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>
