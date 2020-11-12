@@ -1,7 +1,7 @@
 ## Architecture
 Project consist of three modules:
-- `Pokexed` - Main module with the list of pokemons and detailed page which contains a large high-resolution pokemon image, his basic weights and the pokemon unique number!   
-- `PokexedAPI` - API wrapper for https://pokeapi.co.
+- `Pokedex` - Main module with the list of pokemons and detailed page which contains a large high-resolution pokemon image, his basic weights and the pokemon unique number!   
+- `PokedexAPI` - API wrapper for https://pokeapi.co.
 - `PokedexStyle` - Wrapper for UI parts in the application. Always helpful. Cut and share everything you use so often.
 
 It's very important to use decomposition for modules! In the nearest future I am planing to split it more and replace more "magic numbers". To make the app more flexibe and easy to support.
