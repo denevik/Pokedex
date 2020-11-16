@@ -2,7 +2,7 @@ public enum ServiceError: Error {
     case request(Error)
     case emptyData
     case invalidURL
-    case parseError(Error)
+    case parseError(Error?)
 }
 
 protocol Networking {
@@ -14,14 +14,14 @@ class NetworkService: Networking {
     // This has to be done with an Operations + Queues
     // It would be way more better and stable solution
     // but since I'm in the bounds of time I have to use a simple one ¯\_(ツ)_/¯
-    private lazy var urlSession: URLSession = {
-        let configuration = URLSessionConfiguration.default
-        configuration.httpMaximumConnectionsPerHost = 350
-        return URLSession(configuration: configuration)
-    }()
+//    private lazy var urlSession: URLSession = {
+//        let configuration = URLSessionConfiguration.default
+//        configuration.httpMaximumConnectionsPerHost =
+//        return URLSession(configuration: configuration)
+//    }()
 
     func performRequest(_ url: URL, completion: @escaping (Result<Data, ServiceError>) -> Void) {
-        urlSession.dataTask(with: url) { data, _, error in
+        URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {
                 completion(.failure(.request(error)))
                 return
@@ -42,7 +42,7 @@ class NetworkService: Networking {
             return completion(.failure(.invalidURL))
         }
 
-        urlSession.dataTask(with: url) { data, _, error in
+        URLSession.shared.dataTask(with: url) { data, response, error in
             do {
 
                 if let error = error {
@@ -59,7 +59,6 @@ class NetworkService: Networking {
 
                 completion(.success(result))
             } catch {
-                print("\(#function) - Error on parse: \(error)")
                 completion(.failure(.parseError(error)))
             }
         }.resume()

@@ -16,14 +16,33 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
         return collectionView
     }()
 
-    private lazy var loadingIndication: UIActivityIndicatorView = {
+    private var searchTimer: Timer?
+
+    private lazy var searchErrorLabel: UILabel = {
+        let label = UILabel()
+        label.font = Font.circularStdBook.uiFont(18)
+        label.textAlignment = .center
+        label.textColor = UIColor.black.withAlphaComponent(0.4)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: searchController.searchBar.frame.height + 44 + 20),
+            label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            label.heightAnchor.constraint(equalToConstant: 18)
+        ])
+
+        return label
+    }()
+
+    private lazy var loadingIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
 
         return activityIndicator
     }()
 
-    private let search = UISearchController(searchResultsController: nil)
+    private let searchController = UISearchController(searchResultsController: nil)
 
     // Please, use IPhone 11 Pro for better appearance
     // because lots of "magic numbers"
@@ -41,14 +60,15 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
 
         setupNavigationController()
         setupCollectionView()
-        setupActivityIndicator()
-        showLoadingIndicator()
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
 
         navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
+        if let delegate = UIApplication.shared.delegate as? AppDelegate {
+            delegate.window?.tintColor = UIColor.systemBlue
+        }
     }
 }
 
@@ -75,18 +95,13 @@ extension PokemonListViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pokemonItem = viewModel.pokemonItems[indexPath.row]
-        guard let pokemon = viewModel.pokemonDetails(name: pokemonItem.name) else { return }
+        guard let pokemon = viewModel.pokemonDetails(name: pokemonItem.name), let pokemonImage = pokemonItem.image else {
+            return
+        }
 
-        let pokemonDetailsViewModel = PokemonDetailsViewModel(pokemon: pokemon, pokemonImage: pokemonItem.image)
+        let pokemonDetailsViewModel = PokemonDetailsViewModel(pokemon: pokemon, pokemonImage: pokemonImage)
         let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: pokemonDetailsViewModel)
         navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
-    }
-
-    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-        // Quick alternative of prefetchItemsAt
-        if indexPath.row == viewModel.pokemonItems.count - 60 {
-            viewModel.loadMore()
-        }
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -97,19 +112,42 @@ extension PokemonListViewController: UICollectionViewDelegateFlowLayout {
     }
 }
 
+extension PokemonListViewController: UICollectionViewDataSourcePrefetching {
+    func collectionView(_ collectionView: UICollectionView, prefetchItemsAt indexPaths: [IndexPath]) {
+        if indexPaths.contains(IndexPath(row: viewModel.pokemonItems.count - 1, section: 0)) {
+            viewModel.loadMore()
+        }
+    }
+}
+
 // MARK: - PokemonListViewModelDelegate
 
 extension PokemonListViewController: PokemonListViewModelDelegate {
-
-    func didFinishPageLoading() {
-        // We can do batchUpdates but it would be better
-        // to combine it with Operation + Queue
+    func searchDidFinish(status: SearchStatus) {
         hideLoadingIndicator()
+
+        switch status {
+        case .notEnoughLetters:
+            searchErrorLabel.text = "Provide more letters for search"
+            showSearchError()
+        case .noMatch:
+            searchErrorLabel.text = "No matches"
+            showSearchError()
+        case .requestIssue:
+            searchErrorLabel.text = "Something went wrong"
+            showSearchError()
+        case .emptySearch, .success:
+            hideSearchError()
+            collectionView.reloadData()
+        }
+    }
+
+    func dataSourceDidUpdate() {
         collectionView.reloadData()
     }
 
-    func filterDidUpdate() {
-        collectionView.reloadData()
+    func didFinishLoadingPokemon(_ id: Int) {
+        performBatchUpdates(for: id - 1)
     }
 }
 
@@ -118,20 +156,20 @@ extension PokemonListViewController: PokemonListViewModelDelegate {
 extension PokemonListViewController: UISearchBarDelegate {
 
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.filter = searchText
+        searchDidUpdate(with: searchText)
     }
 
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         searchBar.resignFirstResponder()
-        if let text = searchBar.text?.trimmingCharacters(in: .whitespaces), !text.isEmpty {
-            viewModel.filter = text
+        if let text = searchBar.text {
+            searchDidUpdate(with: text)
         }
     }
 
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        viewModel.filter = ""
-        searchBar.text = ""
         searchBar.resignFirstResponder()
+        searchBar.text = ""
+        searchDidUpdate(with: searchBar.text!)
     }
 }
 
@@ -152,6 +190,8 @@ private extension PokemonListViewController {
             collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
 
+        collectionView.prefetchDataSource = self
+
         collectionView.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
     }
 
@@ -163,7 +203,7 @@ private extension PokemonListViewController {
         navigationController?.navigationBar.backIndicatorImage = backArrowWithInsets
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = backArrowWithInsets
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
-        navigationItem.searchController = search
+        navigationItem.searchController = searchController
         navigationItem.searchController?.searchBar.placeholder = "Search Pokemon, e.g. Pikachu"
         navigationItem.searchController?.searchBar.delegate = self
         navigationItem.searchController?.delegate = self
@@ -171,24 +211,46 @@ private extension PokemonListViewController {
         definesPresentationContext = true
     }
 
-    func setupActivityIndicator() {
-        view.addSubview(loadingIndication)
-        NSLayoutConstraint.activate([
-            loadingIndication.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            loadingIndication.centerYAnchor.constraint(equalTo: view.centerYAnchor)
-        ])
-    }
-
-    // We can do extra actions for animations
-    // this is why I used separate functions
-    // But due to time limit leave it as is
     func showLoadingIndicator() {
-        loadingIndication.startAnimating()
+        if !loadingIndicator.isDescendant(of: view) && !loadingIndicator.isAnimating {
+            view.addSubview(loadingIndicator)
+            NSLayoutConstraint.activate([
+                loadingIndicator.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30 + searchErrorLabel.frame.height),
+                loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            ])
+            loadingIndicator.startAnimating()
+        }
     }
 
     func hideLoadingIndicator() {
-        if loadingIndication.isAnimating {
-            loadingIndication.stopAnimating()
+        loadingIndicator.stopAnimating()
+        loadingIndicator.removeFromSuperview()
+    }
+
+    func performBatchUpdates(for index: Int) {
+        if viewModel.pokemonItems.indices.contains(index) {
+            collectionView.performBatchUpdates {
+                collectionView.reloadItems(at: [IndexPath(row: index, section: 0)])
+            }
         }
+    }
+
+    func searchDidUpdate(with text: String) {
+//        searchTimer?.invalidate()
+//        searchTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
+        hideSearchError()
+        showLoadingIndicator()
+        viewModel.searchPokemon(name: text.lowercased())
+//        }
+    }
+
+    func showSearchError() {
+        collectionView.isHidden = true
+        searchErrorLabel.isHidden = false
+    }
+
+    func hideSearchError() {
+        searchErrorLabel.isHidden = true
+        collectionView.isHidden = false
     }
 }

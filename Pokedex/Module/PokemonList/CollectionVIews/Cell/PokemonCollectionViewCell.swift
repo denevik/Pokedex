@@ -24,6 +24,11 @@ class PokemonCollectionViewCell: UICollectionViewCell {
 
     private let pokemonImageView = UIImageView()
 
+    private let loadingIndicator = UIActivityIndicatorView()
+    private let errorStackView = UIStackView()
+    private let errorLabel = UILabel()
+    private let errorImageView = UIImageView()
+
     override init(frame: CGRect) {
         super.init(frame: frame)
 
@@ -39,6 +44,7 @@ class PokemonCollectionViewCell: UICollectionViewCell {
     override func prepareForReuse() {
         super.prepareForReuse()
 
+        loadingIndicator.stopAnimating()
         contentView.backgroundColor = .clear
         nameLabel.text = ""
         pokemonIdLabel?.removeFromSuperview()
@@ -56,30 +62,20 @@ class PokemonCollectionViewCell: UICollectionViewCell {
         typeLabel = UILabel()
     }
 
-    // Some of the calculations left as is due to time limit
-
     func configure(with item: PokemonItem) {
-        nameLabel.text = item.name.uppercaseFirstLetter()
-        pokemonImageView.image = item.image
-        contentView.backgroundColor = item.types.first?.color
-        configureTypeLabels(with: item.types)
+        // Implement after OperationQueue + Queue
+        switch item.state {
+        case .loading:
+            showLoadingIndicator()
 
-        pokemonIdLabel = PokemonIdLabel(id: item.id)
-        guard let pokemonIdLabel = pokemonIdLabel else {
-            return
+        case .finished:
+            hideLoadingIndicator()
+            updateCell(with: item)
+
+        case .error:
+            hideLoadingIndicator()
+            showCellError()
         }
-
-        pokemonIdLabel.font = Font.circularStdBold.uiFont(14)
-        pokemonIdLabel.textAlignment = .center
-        pokemonIdLabel.textColor = UIColor.black.withAlphaComponent(0.12)
-        pokemonIdLabel.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(pokemonIdLabel)
-        NSLayoutConstraint.activate([
-            pokemonIdLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            pokemonIdLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
-            pokemonIdLabel.heightAnchor.constraint(equalToConstant: pokemonIdLabel.frame.height),
-            pokemonIdLabel.widthAnchor.constraint(equalToConstant: 60)
-        ])
     }
 }
 
@@ -129,6 +125,35 @@ private extension PokemonCollectionViewCell {
             pokemonImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: CellLayoutConstaints.pokemonImageViewTrailing),
             pokemonImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: CellLayoutConstaints.pokemonImageViewBottom)
         ])
+
+        // loading indicator
+        loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(loadingIndicator)
+        NSLayoutConstraint.activate([
+            loadingIndicator.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            loadingIndicator.centerXAnchor.constraint(equalTo: contentView.centerXAnchor)
+        ])
+    }
+
+    func showLoadingIndicator() {
+        loadingIndicator.startAnimating()
+    }
+
+    func hideLoadingIndicator() {
+        loadingIndicator.stopAnimating()
+    }
+
+    func updateCell(with item: PokemonItem) {
+        guard let types = item.types else {
+            showCellError()
+            return
+        }
+        nameLabel.text = item.name.uppercaseFirstLetter()
+        pokemonImageView.image = item.image
+        contentView.backgroundColor = types.first?.color
+
+        configureTypeLabels(with: types)
+        configurePokemonIdLabel(item.id)
     }
 
     func configureTypeLabels(with types: [PokemonType]) {
@@ -183,5 +208,28 @@ private extension PokemonCollectionViewCell {
         ])
         backgroundView.isHidden = false
         typeLabel.isHidden = false
+    }
+
+    func configurePokemonIdLabel(_ id: Int) {
+        pokemonIdLabel = PokemonIdLabel(id: id)
+        guard let pokemonIdLabel = pokemonIdLabel else {
+            return
+        }
+
+        pokemonIdLabel.font = Font.circularStdBold.uiFont(14)
+        pokemonIdLabel.textAlignment = .center
+        pokemonIdLabel.textColor = UIColor.black.withAlphaComponent(0.12)
+        pokemonIdLabel.translatesAutoresizingMaskIntoConstraints = false
+        contentView.addSubview(pokemonIdLabel)
+        NSLayoutConstraint.activate([
+            pokemonIdLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
+            pokemonIdLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            pokemonIdLabel.heightAnchor.constraint(equalToConstant: pokemonIdLabel.frame.height),
+            pokemonIdLabel.widthAnchor.constraint(equalToConstant: 60)
+        ])
+    }
+
+    func showCellError() {
+        // TODO: show error icon on image and hide other views
     }
 }

@@ -255,7 +255,7 @@
 			isa = PBXGroup;
 			children = (
 				763E8764255888E400B4B6BF /* AppDelegate.swift */,
-				960144FD255B660F000D94D8 /* Extension */,
+				960144FD255B660F000D94D8 /* Extensions */,
 				96BCA8A7255ADAA100C86AF8 /* Module */,
 				763E876A255888E400B4B6BF /* Main.storyboard */,
 				763E876D255888E500B4B6BF /* Assets.xcassets */,
@@ -274,12 +274,12 @@
 			path = PokedexTests;
 			sourceTree = "<group>";
 		};
-		960144FD255B660F000D94D8 /* Extension */ = {
+		960144FD255B660F000D94D8 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
 				960144FE255B6649000D94D8 /* String.swift */,
 			);
-			path = Extension;
+			path = Extensions;
 			sourceTree = "<group>";
 		};
 		9601450C255B6D78000D94D8 /* Fonts */ = {
@@ -320,6 +320,14 @@
 				960146F7255D56BB000D94D8 /* Label.swift */,
 			);
 			path = Common;
+			sourceTree = "<group>";
+		};
+		963E39B22560134E00B5ACC7 /* CollectionVIews */ = {
+			isa = PBXGroup;
+			children = (
+				96BCA8A8255ADAD000C86AF8 /* Cell */,
+			);
+			path = CollectionVIews;
 			sourceTree = "<group>";
 		};
 		96B8834B255B4D2A000F0BF8 /* PokedexUITests */ = {
@@ -382,9 +390,9 @@
 			isa = PBXGroup;
 			children = (
 				96B8835C255B50D1000F0BF8 /* Model */,
-				96BCA8A8255ADAD000C86AF8 /* Cell */,
-				763E8768255888E400B4B6BF /* PokemonListViewController.swift */,
+				963E39B22560134E00B5ACC7 /* CollectionVIews */,
 				96B882FF255AE420000F0BF8 /* PokemonListViewModel.swift */,
+				763E8768255888E400B4B6BF /* PokemonListViewController.swift */,
 			);
 			path = PokemonList;
 			sourceTree = "<group>";
@@ -947,6 +955,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 968ZU6T5R8;
 				INFOPLIST_FILE = Pokedex/Info.plist;
@@ -956,6 +965,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.denevik.Pokedex;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -967,6 +977,7 @@
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 968ZU6T5R8;
 				INFOPLIST_FILE = Pokedex/Info.plist;
@@ -976,6 +987,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.denevik.Pokedex;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
