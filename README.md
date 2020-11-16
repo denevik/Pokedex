@@ -4,9 +4,7 @@ Project consist of three modules:
 - `PokedexAPI` - API wrapper for https://pokeapi.co.
 - `PokedexStyle` - Wrapper for UI parts in the application. Always helpful. Cut and share everything you use so often.
 
-It's very important to use decomposition for modules! In the nearest future I am planing to split it more and replace more "magic numbers". To make the app more flexibe and easy to support.
-
-We still can use some pods. But, at this moment, I want you to show that we can achieve everything even without help!
+![](https://github.com/denevik/Pokedex/repo_preview.png)
 
 ## Coverage
 - [X] Use Swift 5.3.
