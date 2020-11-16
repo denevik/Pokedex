@@ -4,7 +4,7 @@ Project consist of three modules:
 - `PokedexAPI` - API wrapper for https://pokeapi.co.
 - `PokedexStyle` - Wrapper for UI parts in the application. Always helpful. Cut and share everything you use so often.
 
-![](https://github.com/denevik/Pokedex/repo_preview.png)
+![](https://github.com/denevik/Pokedex/blob/master/repo_preview.png)
 
 ## Coverage
 - [X] Use Swift 5.3.
