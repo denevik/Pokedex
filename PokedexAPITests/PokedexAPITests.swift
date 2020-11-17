@@ -3,10 +3,6 @@ import XCTest
 
 class PokedexAPITests: XCTestCase {
 
-    // We also can use Quick and Nimble for test cuz they are easy to use
-    // and also they are way too much flexible in terms of tests
-    // But it's in the pods, I'm not using pods atm in this project
-
     func testPokemonRequestWithWrongURLEndpoint() {
         // make endpoint with invalid URL
         // call pokedex service with invalid endpoint

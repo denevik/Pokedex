@@ -3,6 +3,34 @@ import PokedexStyle
 
 class PokemonListViewController: UIViewController, UISearchControllerDelegate {
 
+    fileprivate struct Constants {
+
+        // Back arrow for navigation controller
+        static let backArrorIconName = "backArrow"
+        static let backArrowEdgeInsets = UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0)
+
+        // Collection view cell
+        static let collectionViewCellWidth = 155
+        static let collectionViewCellHeight = 111
+        static let collectionViewCellTopInset: CGFloat = 0
+        static let collectionViewCellLeftInset: CGFloat = 25
+        static let collectionViewCellRightInset: CGFloat = 25
+        static let collectionViewCellBottomInset: CGFloat = 25
+
+        // Search error label
+        static let searchErrorLabelFontSize: CGFloat = 18
+        static let searchErrorLabelAlpha: CGFloat = 0.4
+        static let searchErrorLabelTopConstant: CGFloat = 20
+        static let searchErrorLabelHeightConstant: CGFloat = 18
+
+        // Loading indicator
+        static let loadingIndicatorTopConstant: CGFloat = 30
+
+        // Navigation controller
+        static let navigationControllerTitle = "Pokedex"
+        static let navigationControllerSearchBarPlaceholder = "Search Pokemon, e.g. Pikachu"
+    }
+
     private lazy var viewModel: PokemonListViewModelProtocol = {
         PokemonListViewModel()
     }()
@@ -20,16 +48,16 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
 
     private lazy var searchErrorLabel: UILabel = {
         let label = UILabel()
-        label.font = Font.circularStdBook.uiFont(18)
+        label.font = Font.circularStdBook.uiFont(Constants.searchErrorLabelFontSize)
         label.textAlignment = .center
-        label.textColor = UIColor.black.withAlphaComponent(0.4)
+        label.textColor = UIColor.black.withAlphaComponent(Constants.searchErrorLabelAlpha)
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor, constant: searchController.searchBar.frame.height + 44 + 20),
+            label.topAnchor.constraint(equalTo: view.topAnchor, constant: searchController.searchBar.frame.height + (navigationController?.navigationBar.frame.height ?? 0.0) + Constants.searchErrorLabelTopConstant),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            label.heightAnchor.constraint(equalToConstant: 18)
+            label.heightAnchor.constraint(equalToConstant: Constants.searchErrorLabelHeightConstant)
         ])
 
         return label
@@ -44,15 +72,6 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
     }()
 
     private let searchController = UISearchController(searchResultsController: nil)
-
-    // Please, use IPhone 11 Pro for better appearance
-    // because lots of "magic numbers"
-    // and not many scaling calculations according to the screen size
-    //
-    // Thank you!
-    //
-    // P.s. I did remove cell loading indicator + status
-    // (e.g. loading, finished, error) because it was not finished
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -91,25 +110,25 @@ extension PokemonListViewController: UICollectionViewDataSource {
 extension PokemonListViewController: UICollectionViewDelegateFlowLayout {
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        CGSize(width: PokemonCollectionViewCell.Constants.width, height: PokemonCollectionViewCell.Constants.height)
+        CGSize(width: Constants.collectionViewCellWidth, height: Constants.collectionViewCellHeight)
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let pokemonItem = viewModel.pokemonItems[indexPath.row]
-        guard let pokemon = viewModel.pokemonDetails(name: pokemonItem.name), let pokemonImage = pokemonItem.image else {
+        guard let pokemon = viewModel.pokemonDetails(name: pokemonItem.name) else {
             return
         }
 
-        let pokemonDetailsViewModel = PokemonDetailsViewModel(pokemon: pokemon, pokemonImage: pokemonImage)
+        let pokemonDetailsViewModel = PokemonDetailsViewModel(pokemon: pokemon)
         let pokemonDetailsViewController = PokemonDetailsViewController(viewModel: pokemonDetailsViewModel)
         navigationController?.pushViewController(pokemonDetailsViewController, animated: true)
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: 0,
-                            left: PokemonCollectionViewCell.Constants.leftInset,
-                            bottom: PokemonCollectionViewCell.Constants.leftInset,
-                            right: PokemonCollectionViewCell.Constants.rightInset)
+        return UIEdgeInsets(top: Constants.collectionViewCellTopInset,
+                            left: Constants.collectionViewCellLeftInset,
+                            bottom: Constants.collectionViewCellBottomInset,
+                            right: Constants.collectionViewCellRightInset)
     }
 }
 
@@ -129,13 +148,13 @@ extension PokemonListViewController: PokemonListViewModelDelegate {
 
         switch status {
         case .notEnoughLetters:
-            searchErrorLabel.text = "Provide more letters for search"
+            searchErrorLabel.text = status.rawValue
             showSearchError()
         case .noMatch:
-            searchErrorLabel.text = "No matches"
+            searchErrorLabel.text = status.rawValue
             showSearchError()
         case .requestIssue:
-            searchErrorLabel.text = "Something went wrong"
+            searchErrorLabel.text = status.rawValue
             showSearchError()
         case .emptySearch, .success:
             hideSearchError()
@@ -192,20 +211,19 @@ private extension PokemonListViewController {
         ])
 
         collectionView.prefetchDataSource = self
-
         collectionView.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
     }
 
     func setupNavigationController() {
-        title = "Pokedex"
+        title = Constants.navigationControllerTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationController?.navigationBar.largeTitleTextAttributes = [NSAttributedString.Key.foregroundColor: UIColor.black]
-        let backArrowWithInsets = UIImage(named: "backArrow")?.withAlignmentRectInsets(UIEdgeInsets(top: 0, left: -8, bottom: 0, right: 0))
+        let backArrowWithInsets = UIImage(named: Constants.backArrorIconName)?.withAlignmentRectInsets(Constants.backArrowEdgeInsets)
         navigationController?.navigationBar.backIndicatorImage = backArrowWithInsets
         navigationController?.navigationBar.backIndicatorTransitionMaskImage = backArrowWithInsets
         navigationItem.backBarButtonItem = UIBarButtonItem(title: "", style: UIBarButtonItem.Style.plain, target: nil, action: nil)
         navigationItem.searchController = searchController
-        navigationItem.searchController?.searchBar.placeholder = "Search Pokemon, e.g. Pikachu"
+        navigationItem.searchController?.searchBar.placeholder = Constants.navigationControllerSearchBarPlaceholder
         navigationItem.searchController?.searchBar.delegate = self
         navigationItem.searchController?.delegate = self
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
@@ -217,7 +235,7 @@ private extension PokemonListViewController {
         if !loadingIndicator.isDescendant(of: view) && !loadingIndicator.isAnimating {
             view.addSubview(loadingIndicator)
             NSLayoutConstraint.activate([
-                loadingIndicator.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 30 + searchErrorLabel.frame.height),
+                loadingIndicator.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: Constants.loadingIndicatorTopConstant + searchErrorLabel.frame.height),
                 loadingIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             ])
             loadingIndicator.startAnimating()
@@ -238,12 +256,9 @@ private extension PokemonListViewController {
     }
 
     func searchDidUpdate(with text: String) {
-//        searchTimer?.invalidate()
-//        searchTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: false) { [weak self] _ in
         hideSearchError()
         showLoadingIndicator()
         viewModel.searchPokemon(name: text.lowercased())
-//        }
     }
 
     func showSearchError() {

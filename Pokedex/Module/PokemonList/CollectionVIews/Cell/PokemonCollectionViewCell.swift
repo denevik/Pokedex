@@ -3,12 +3,46 @@ import PokedexStyle
 /// Pokemon cell to display
 class PokemonCollectionViewCell: UICollectionViewCell {
 
-    struct Constants {
-        static let width = 155
-        static let height = 111
-        static let leftInset: CGFloat = 25
-        static let rightInset: CGFloat = 25
-        static let bottomInset: CGFloat = 25
+    fileprivate struct Constants {
+        // Cell layer
+        static let layerCornerRadius: CGFloat = 15
+
+        // Default type labels and background views constants
+        static let defaultTypeLabelBackgroundViewAlpha: CGFloat = 0.4
+        static let defaultTypeLabelBackgroundViewCornerRadius: CGFloat = 8
+        static let defaultTypeLabelFontSize: CGFloat = 8
+
+        // 1 Pokemon id label
+        static let pokemonIdLabelFontSize: CGFloat = 14
+        static let pokemonIdLabelAlpha: CGFloat = 0.12
+        static let pokemonIdLabelTopConstant: CGFloat = 10
+        static let pokemonIdLabelTrailingConstant: CGFloat = -4
+        static let pokemonIdLabelWidthConstant: CGFloat = 60
+
+        // 2 Name label
+        static let nameLabelFontSize: CGFloat = 14
+        static let nameLabelTopConstant: CGFloat = 24
+        static let nameLabelLeadingConstant: CGFloat = 16
+        static let nameLabelHeightConstant: CGFloat = 14
+
+        // 3 Pokemon image view
+        static let pokemonImageViewTop: CGFloat = 40
+        static let pokemonImageViewLeading: CGFloat = 72
+        static let pokemonImageViewTrailing: CGFloat = -7
+        static let pokemonImageViewBottom: CGFloat = -1
+        static let pokemonImageViewWidth: CGFloat = 76
+        static let pokemonImageViewHeight: CGFloat = 71
+
+        // 4.1 First type label background view
+        static let firstTypeLabelBackgroundViewTopConstant: CGFloat = 10
+        static let firstTypeLabelBackgroundViewLeadingConstant: CGFloat = 16
+        static let firstTypeLabelBackgroundViewHeightConstant: CGFloat = 16
+
+        // 4.2 Second type label background view
+        static let secondTypeLabelBackgroundViewTopConstant: CGFloat = 6
+        static let secondTypeLabelBackgroundViewLeadingConstant: CGFloat = 16
+        static let secondTypeLabelBackgroundViewHeightConstant: CGFloat = 16
+        static let secondTypeLabelBackgroundViewBottomConstant: CGFloat = -25
     }
 
     static let reuseIdentifier = "PokemonCell"
@@ -63,7 +97,6 @@ class PokemonCollectionViewCell: UICollectionViewCell {
     }
 
     func configure(with item: PokemonItem) {
-        // Implement after OperationQueue + Queue
         switch item.state {
         case .loading:
             showLoadingIndicator()
@@ -71,62 +104,38 @@ class PokemonCollectionViewCell: UICollectionViewCell {
         case .finished:
             hideLoadingIndicator()
             updateCell(with: item)
-
-        case .error:
-            hideLoadingIndicator()
-            showCellError()
         }
     }
 }
 
 private extension PokemonCollectionViewCell {
 
-    struct CellLayoutConstaints {
-        // Sadly, not all magic numbers moved to Constants
-
-        // layer
-        static let layerCornerRadius: CGFloat = 15
-
-        // nameLabel
-        static let nameLabelTop: CGFloat = 24
-        static let nameLabelLeading: CGFloat = 16
-
-        // pokemon image view
-        static let pokemonImageViewTop: CGFloat = 40
-        static let pokemonImageViewLeading: CGFloat = 72
-        static let pokemonImageViewTrailing: CGFloat = -7
-        static let pokemonImageViewBottom: CGFloat = -1
-        static let pokemonImageViewWidth: CGFloat = 76
-        static let pokemonImageViewHeight: CGFloat = 71
-    }
-
     func commonInit() {
-        // configure layer
-        contentView.layer.cornerRadius = CellLayoutConstaints.layerCornerRadius
+        contentView.layer.cornerRadius = Constants.layerCornerRadius
 
-        // nameLabel
-        nameLabel.font = Font.circularStdBold.uiFont(14)
+        // Name label
+        nameLabel.font = Font.circularStdBold.uiFont(Constants.nameLabelFontSize)
         nameLabel.textColor = .white
         contentView.addSubview(nameLabel)
         nameLabel.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: CellLayoutConstaints.nameLabelTop),
-            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: CellLayoutConstaints.nameLabelLeading),
-            nameLabel.heightAnchor.constraint(equalToConstant: 14)
+            nameLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.nameLabelTopConstant),
+            nameLabel.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.nameLabelLeadingConstant),
+            nameLabel.heightAnchor.constraint(equalToConstant: Constants.nameLabelHeightConstant)
         ])
 
-        // pokemon image view
+        // Pokemon image view
         pokemonImageView.contentMode = .scaleAspectFit
         contentView.addSubview(pokemonImageView)
         pokemonImageView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            pokemonImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: CellLayoutConstaints.pokemonImageViewTop),
-            pokemonImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: CellLayoutConstaints.pokemonImageViewLeading),
-            pokemonImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: CellLayoutConstaints.pokemonImageViewTrailing),
-            pokemonImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: CellLayoutConstaints.pokemonImageViewBottom)
+            pokemonImageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.pokemonImageViewTop),
+            pokemonImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.pokemonImageViewLeading),
+            pokemonImageView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.pokemonImageViewTrailing),
+            pokemonImageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: Constants.pokemonImageViewBottom)
         ])
 
-        // loading indicator
+        // Loading indicator
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
         loadingIndicator.color = .gray
         contentView.addSubview(loadingIndicator)
@@ -146,7 +155,6 @@ private extension PokemonCollectionViewCell {
 
     func updateCell(with item: PokemonItem) {
         guard let types = item.types else {
-            showCellError()
             return
         }
         nameLabel.text = item.name.uppercaseFirstLetter()
@@ -164,17 +172,17 @@ private extension PokemonCollectionViewCell {
         contentView.addSubview(firstTypeLabelBackgroundView)
         contentView.addSubview(firstTypeLabel)
         NSLayoutConstraint.activate([
-            firstTypeLabelBackgroundView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: 10),
-            firstTypeLabelBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            firstTypeLabelBackgroundView.heightAnchor.constraint(equalToConstant: 16)
+            firstTypeLabelBackgroundView.topAnchor.constraint(equalTo: nameLabel.bottomAnchor, constant: Constants.firstTypeLabelBackgroundViewTopConstant),
+            firstTypeLabelBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.firstTypeLabelBackgroundViewLeadingConstant),
+            firstTypeLabelBackgroundView.heightAnchor.constraint(equalToConstant: Constants.firstTypeLabelBackgroundViewHeightConstant)
         ])
         contentView.addSubview(secondTypeLabelBackgroundView)
         contentView.addSubview(secondTypeLabel)
         NSLayoutConstraint.activate([
-            secondTypeLabelBackgroundView.topAnchor.constraint(equalTo: firstTypeLabelBackgroundView.bottomAnchor, constant: 6),
-            secondTypeLabelBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            secondTypeLabelBackgroundView.heightAnchor.constraint(equalToConstant: 16),
-            secondTypeLabelBackgroundView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: -25)
+            secondTypeLabelBackgroundView.topAnchor.constraint(equalTo: firstTypeLabelBackgroundView.bottomAnchor, constant: Constants.secondTypeLabelBackgroundViewTopConstant),
+            secondTypeLabelBackgroundView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: Constants.secondTypeLabelBackgroundViewLeadingConstant),
+            secondTypeLabelBackgroundView.heightAnchor.constraint(equalToConstant: Constants.secondTypeLabelBackgroundViewHeightConstant),
+            secondTypeLabelBackgroundView.bottomAnchor.constraint(greaterThanOrEqualTo: contentView.bottomAnchor, constant: Constants.secondTypeLabelBackgroundViewBottomConstant)
         ])
 
         if let firstType = types.first {
@@ -188,11 +196,11 @@ private extension PokemonCollectionViewCell {
 
 
     func configureTypeLabel(_ label: inout UILabel, with backgroundView: inout UIView) {
-        backgroundView.backgroundColor = UIColor.white.withAlphaComponent(0.4)
+        backgroundView.backgroundColor = UIColor.white.withAlphaComponent(Constants.defaultTypeLabelBackgroundViewAlpha)
         backgroundView.translatesAutoresizingMaskIntoConstraints = false
-        backgroundView.layer.cornerRadius = 8
+        backgroundView.layer.cornerRadius = Constants.defaultTypeLabelBackgroundViewCornerRadius
         backgroundView.isHidden = true
-        label.font = Font.circularStdBook.uiFont(8)
+        label.font = Font.circularStdBook.uiFont(Constants.defaultTypeLabelFontSize)
         label.textAlignment = .center
         label.textColor = .white
         label.translatesAutoresizingMaskIntoConstraints = false
@@ -217,20 +225,16 @@ private extension PokemonCollectionViewCell {
             return
         }
 
-        pokemonIdLabel.font = Font.circularStdBold.uiFont(14)
+        pokemonIdLabel.font = Font.circularStdBold.uiFont(Constants.pokemonIdLabelFontSize)
         pokemonIdLabel.textAlignment = .center
-        pokemonIdLabel.textColor = UIColor.black.withAlphaComponent(0.12)
+        pokemonIdLabel.textColor = UIColor.black.withAlphaComponent(Constants.pokemonIdLabelAlpha)
         pokemonIdLabel.translatesAutoresizingMaskIntoConstraints = false
         contentView.addSubview(pokemonIdLabel)
         NSLayoutConstraint.activate([
-            pokemonIdLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 10),
-            pokemonIdLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -4),
+            pokemonIdLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: Constants.pokemonIdLabelTopConstant),
+            pokemonIdLabel.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: Constants.pokemonIdLabelTrailingConstant),
             pokemonIdLabel.heightAnchor.constraint(equalToConstant: pokemonIdLabel.frame.height),
-            pokemonIdLabel.widthAnchor.constraint(equalToConstant: 60)
+            pokemonIdLabel.widthAnchor.constraint(equalToConstant: Constants.pokemonIdLabelWidthConstant)
         ])
-    }
-
-    func showCellError() {
-        // TODO: show error icon on image and hide other views
     }
 }

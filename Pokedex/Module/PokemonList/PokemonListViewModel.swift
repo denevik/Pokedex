@@ -3,8 +3,11 @@ import PokedexAPI
 import PokedexStyle
 
 
-enum SearchStatus {
-    case noMatch, notEnoughLetters, requestIssue, success, emptySearch
+enum SearchStatus: String {
+    case noMatch = "No matches - full name needed"
+    case notEnoughLetters = "Provide more letters for search"
+    case requestIssue = "Something went wrong"
+    case success, emptySearch 
 }
 
 protocol PokemonListViewModelDelegate: class {
@@ -84,6 +87,9 @@ class PokemonListViewModel: PokemonListViewModelProtocol {
 
             case .failure(let error):
                 print("\(#function) Error during pokemon search request: \(error)")
+                DispatchQueue.main.async {
+                    self?.delegate?.searchDidFinish(status: .requestIssue)
+                }
             }
         }
     }
@@ -149,7 +155,7 @@ class PokemonListViewModel: PokemonListViewModelProtocol {
                 }
 
             case .failure(let error):
-                print("\(#function) - Error while loading pokemon: \(error)")
+                print("\(#function) - Error while loading pokemon list: \(error)")
             }
         }
     }

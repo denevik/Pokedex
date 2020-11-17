@@ -11,15 +11,6 @@ protocol Networking {
 
 class NetworkService: Networking {
 
-    // This has to be done with an Operations + Queues
-    // It would be way more better and stable solution
-    // but since I'm in the bounds of time I have to use a simple one ¯\_(ツ)_/¯
-//    private lazy var urlSession: URLSession = {
-//        let configuration = URLSessionConfiguration.default
-//        configuration.httpMaximumConnectionsPerHost =
-//        return URLSession(configuration: configuration)
-//    }()
-
     func performRequest(_ url: URL, completion: @escaping (Result<Data, ServiceError>) -> Void) {
         URLSession.shared.dataTask(with: url) { data, _, error in
             if let error = error {

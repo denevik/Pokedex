@@ -5,7 +5,6 @@ import PokedexStyle
 enum PokemonLoadingState {
     case loading
     case finished
-    case error
 }
 
 /// Pokemon item to configure Pokemon cell
