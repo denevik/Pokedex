@@ -53,7 +53,6 @@ class PokemonDetailsViewController: UIViewController {
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "About"
-        //        label.textAlignment = .center
 
         return label
     }()
@@ -63,6 +62,7 @@ class PokemonDetailsViewController: UIViewController {
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
         label.font = Font.circularStdBook.uiFont(14)
+        label.textColor = .black
         label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = viewModel.pokemon.description

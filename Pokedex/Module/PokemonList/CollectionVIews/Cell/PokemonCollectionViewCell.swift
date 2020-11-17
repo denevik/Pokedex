@@ -128,6 +128,7 @@ private extension PokemonCollectionViewCell {
 
         // loading indicator
         loadingIndicator.translatesAutoresizingMaskIntoConstraints = false
+        loadingIndicator.color = .gray
         contentView.addSubview(loadingIndicator)
         NSLayoutConstraint.activate([
             loadingIndicator.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),

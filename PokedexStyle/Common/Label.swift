@@ -15,7 +15,7 @@ public class PokemonIdLabel: UILabel {
     func commonInit() {
         textColor = .white
 
-        let upperBound = 3 - Array(String(id)).count
+        let upperBound = 5 - Array(String(id)).count
         var labelText = "#"
         for _ in 0..<upperBound {
             labelText.append("0")

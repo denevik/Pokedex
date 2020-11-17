@@ -38,6 +38,7 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
     private lazy var loadingIndicator: UIActivityIndicatorView = {
         let activityIndicator = UIActivityIndicatorView()
         activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        activityIndicator.color = .gray
 
         return activityIndicator
     }()
@@ -209,6 +210,7 @@ private extension PokemonListViewController {
         navigationItem.searchController?.delegate = self
         navigationItem.searchController?.obscuresBackgroundDuringPresentation = false
         definesPresentationContext = true
+        view.backgroundColor = .white
     }
 
     func showLoadingIndicator() {
