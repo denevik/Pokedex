@@ -26,7 +26,7 @@ Additional points:
 - [X] Gorgeous pokemon details controller instead of image and some text with basic stuff.
 - [X] Split network layer into separate framework instead of using all network logic in the same one.
 - [X] Add additional framework for UI style parts such as fonts, background colors for pokemons, and label for pokemon details page.
-- [X] Providing app icons like app icon, pokemon gender icons, the back arrow for the detailed screen.
+- [X] Providing app icons like app icon and the back arrow for the detailed screen.
 - [X] Dynamic UI update for with colors according to list or detailed controller.
 - [X] Move all `magic numbers` to constants.
 
