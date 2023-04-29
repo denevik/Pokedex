@@ -10,13 +10,13 @@ enum SearchStatus: String {
     case success, emptySearch 
 }
 
-protocol PokemonListViewModelDelegate: class {
+protocol PokemonListViewModelDelegate: AnyObject {
     func dataSourceDidUpdate()
     func didFinishLoadingPokemon(_ id: Int)
     func searchDidFinish(status: SearchStatus)
 }
 
-protocol PokemonListViewModelProtocol: class {
+protocol PokemonListViewModelProtocol: AnyObject {
     /// Pokemon List View Model delegate who will notify for any changes inside
     var delegate: PokemonListViewModelDelegate? { get set }
 
@@ -105,7 +105,7 @@ class PokemonListViewModel: PokemonListViewModelProtocol {
     private var allPokemonNames = [String]()
     private var detailedPokemons = [String: Pokemon]()
     private var searchPokemon: PokemonItem?
-    private let pageLimit = 60
+    private let pageLimit = 20
     private let maximumLimit = 1050
     private var offset: Int {
         pageLimit * (currentPage - 1)
