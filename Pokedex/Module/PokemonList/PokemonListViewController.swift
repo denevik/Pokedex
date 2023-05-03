@@ -21,7 +21,6 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
         static let searchErrorLabelFontSize: CGFloat = 18
         static let searchErrorLabelAlpha: CGFloat = 0.4
         static let searchErrorLabelTopConstant: CGFloat = 20
-        static let searchErrorLabelHeightConstant: CGFloat = 18
 
         // Loading indicator
         static let loadingIndicatorTopConstant: CGFloat = 30
@@ -38,8 +37,26 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
     private lazy var collectionView: UICollectionView = {
         let collectionViewFlowLayout = UICollectionViewFlowLayout()
         collectionViewFlowLayout.scrollDirection = .vertical
-        let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionViewFlowLayout)
+        let collectionView = UICollectionView(
+            frame: .zero,
+            collectionViewLayout: collectionViewFlowLayout
+        )
         collectionView.backgroundColor = .white
+
+        collectionView.delegate = self
+        collectionView.dataSource = self
+
+        view.addSubview(collectionView)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+
+        collectionView.prefetchDataSource = self
+        collectionView.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
 
         return collectionView
     }()
@@ -54,10 +71,12 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
         label.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(label)
         NSLayoutConstraint.activate([
-            label.topAnchor.constraint(equalTo: view.topAnchor, constant: searchController.searchBar.frame.height + (navigationController?.navigationBar.frame.height ?? 0.0) + Constants.searchErrorLabelTopConstant),
+            label.topAnchor.constraint(
+                equalTo: view.safeAreaLayoutGuide.topAnchor,
+                constant: Constants.searchErrorLabelTopConstant
+            ),
             label.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            label.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            label.heightAnchor.constraint(equalToConstant: Constants.searchErrorLabelHeightConstant)
+            label.trailingAnchor.constraint(equalTo: view.trailingAnchor)
         ])
 
         return label
@@ -79,7 +98,6 @@ class PokemonListViewController: UIViewController, UISearchControllerDelegate {
         viewModel.delegate = self
 
         setupNavigationController()
-        setupCollectionView()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -125,10 +143,12 @@ extension PokemonListViewController: UICollectionViewDelegateFlowLayout {
     }
 
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
-        return UIEdgeInsets(top: Constants.collectionViewCellTopInset,
-                            left: Constants.collectionViewCellLeftInset,
-                            bottom: Constants.collectionViewCellBottomInset,
-                            right: Constants.collectionViewCellRightInset)
+        return UIEdgeInsets(
+            top: Constants.collectionViewCellTopInset,
+            left: Constants.collectionViewCellLeftInset,
+            bottom: Constants.collectionViewCellBottomInset,
+            right: Constants.collectionViewCellRightInset
+        )
     }
 }
 
@@ -196,23 +216,6 @@ extension PokemonListViewController: UISearchBarDelegate {
 // MARK: - PokemonListViewController Private
 
 private extension PokemonListViewController {
-
-    func setupCollectionView() {
-        collectionView.delegate = self
-        collectionView.dataSource = self
-
-        view.addSubview(collectionView)
-        collectionView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
-            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-
-        collectionView.prefetchDataSource = self
-        collectionView.register(PokemonCollectionViewCell.self, forCellWithReuseIdentifier: PokemonCollectionViewCell.reuseIdentifier)
-    }
 
     func setupNavigationController() {
         title = Constants.navigationControllerTitle
